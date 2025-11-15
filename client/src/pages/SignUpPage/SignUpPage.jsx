@@ -6,6 +6,7 @@ function SignUpPage() {
     const navigate = useNavigate();
 
     const [userInfo, setUserInfo] = useState({ email: "", password: "" });
+    const [regError, setRegError] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -14,22 +15,25 @@ function SignUpPage() {
 
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (userInfo.email !== "" && userInfo.password !== "") {
-            console.log(userInfo);
-
             try {
-                const response = await axios.post('http://localhost:5001/signup', userInfo);
+                const response = await axios.post('http://localhost:5001/auth/signup', userInfo);
                 console.log("response from the server: ", response.data);
+                if (response.data.registered) {
+                    setRegError(false);
+                    navigate('/');
+                } else {
+                    setRegError(true);
+                }
             } catch (err) {
-                console.log(err)
-            }
+                console.log("Error in connection: " + err)
+            };
 
         } else {
             console.log("Please fill the fields.")
-        }
+        };
     };
 
     return (
@@ -45,10 +49,10 @@ function SignUpPage() {
                 <br></br>
                 <button type='submit'>signup</button>
             </form>
-
+            {regError && <p style={{ color: 'red' }}>Error in registration. Please try again.</p>}
             <p> have an account? <span style={{ color: 'blue', cursor: "pointer" }} onClick={() => navigate('/')}>login</span> </p>
         </div>
-    )
-}
+    );
+};
 
-export default SignUpPage
+export default SignUpPage;

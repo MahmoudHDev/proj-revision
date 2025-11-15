@@ -3,10 +3,16 @@ import bcrypt from 'bcrypt';
 
 const saltRounds = 10;
 
+const common = {
+    type: String,
+    required: true,
+    trim: true
+}
+
 const UserSchema = new mongoose.Schema({
-    email: { type: String, required: true, lowercase: true, index: { unique: true } },
+    email: { ...common, lowercase: true, unique: [true, "email id already exist"] },
     password: { type: String, required: true, minlength: 5 },
-    username: { type: String, unique: true, lowercase: true },
+    username: { type: String, unique: false, lowercase: true },
     createdAt: { type: Date, default: Date.now }
 });
 
@@ -25,7 +31,7 @@ UserSchema.pre("save", async function (next) {
 });
 
 // Creating the Password Validation Method
-UserSchema.methods.isValidPassword = async (password) => {
+UserSchema.methods.isValidPassword = async function (password) {
     try {
         // Compare provided password with stored hash
         return await bcrypt.compare(password, this.password);
