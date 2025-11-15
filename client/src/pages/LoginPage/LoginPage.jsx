@@ -1,14 +1,20 @@
 
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Hooks/AuthProvider';
 
 function LoginPage() {
 
     const [userInfo, setUserInfo] = useState({ email: "", password: "" });
     const [loginErr, setLoginErr] = useState(false);
-    const auth = useAuth();
+    const { isExp, loginAction } = useAuth();
+    const navigate = useNavigate();
 
+    useEffect(() => {
+        if (!isExp) {
+            navigate('/');
+        }
+    }, [isExp]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -18,7 +24,7 @@ function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (userInfo.email !== "" && userInfo.password !== "") {
-            auth.loginAction(userInfo);
+            loginAction(userInfo);
         } else {
             setLoginErr("Please the fields.")
         };
@@ -38,7 +44,7 @@ function LoginPage() {
                 <br />
                 <br />
 
-                <button type='submit'>Login</button>
+                <button type='submit' disabled={!isExp}>Login</button>
             </form>
             {loginErr && <p style={{ color: 'red' }}>error while login in. Please try again.</p>}
             <p>don't you have an account, <Link to={"/signup"}>Create one</Link></p>

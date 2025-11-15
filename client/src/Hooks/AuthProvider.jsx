@@ -14,7 +14,6 @@ const AuthProvider = ({ children }) => {
 
     const loginAction = async (userInfo) => {
         try {
-            // const resp = await axios.post("http://localhost:5001/api/auth/login", userInfo, { headers: { 'Content-Type': 'application/json' } });
             const resp = await api.post('/auth/login', userInfo)
             if (resp && resp.data.success) {
                 setUser(resp.data.user);
@@ -33,14 +32,14 @@ const AuthProvider = ({ children }) => {
     };
 
     const logOut = async () => {
-
         try {
-            const resp = await axios.get('http://localhost:5001/api/auth/logout');
+            const resp = await api.get('http://localhost:5001/api/auth/logout');
             if (resp && resp.success) {
                 setUser(null);
                 setToken("");
                 localStorage.removeItem("site");
-                navigate("/login")
+                window.location.href("/login")
+                console.log("signed out succ")
             };
         } catch (err) {
             // Show a message for the user.
@@ -50,19 +49,26 @@ const AuthProvider = ({ children }) => {
 
     const isTokenExpired = (token) => {
         try {
-            console.log("token is valid")
             const decoded = jwtDecode(token);
-            return decoded.exp * 1000 < Date.now();
+            const isExp = decoded.exp * 1000 < Date.now();
+            if (isExp) {
+                setUser(null);
+                setToken("");
+                localStorage.removeItem("site");
+                window.location.href("/login")
+                return isExp;
+            } else {
+                return isExp;
+            };
         } catch {
             logOut()
-            console.log("token is not valid")
             return true;
         };
     };
 
-    isTokenExpired(token);
+    const isExp = isTokenExpired(token);
 
-    return <AuthContext.Provider value={{ token, loginErr, user, loginAction, logOut }}>{children}</AuthContext.Provider>
+    return <AuthContext.Provider value={{ token, loginErr, user, loginAction, logOut, isExp }}>{children}</AuthContext.Provider>
 }
 export default AuthProvider;
 

@@ -7,15 +7,13 @@ import { useEffect } from 'react';
 
 
 const PrivateRoute = () => {
-    const { token } = useAuth();
+    const { token, isExp } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
         console.log("PrivateRoute token:", token);
-        if (!token || token === "") { navigate("/login") }
-
-    }, [token])
-
+        if (!token && token === "" || isExp) return navigate("/login");
+    }, [token]);
 
     return (<>
         <Header />

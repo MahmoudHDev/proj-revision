@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import '../src/styles/App.css'
 import LoginPage from './pages/LoginPage/LoginPage.jsx';
 import SignUpPage from './pages/LoginPage/LoginPage.jsx';
